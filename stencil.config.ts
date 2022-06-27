@@ -2,7 +2,7 @@ import { Config } from '@stencil/core';
 
 export const config: Config = {
   namespace: 'barcode-scanner',
-  minifyJs: true,
+  minifyJs: false,
   outputTargets: [
     {
       type: 'dist',

@@ -7,11 +7,11 @@
 
 ## Properties
 
-| Property      | Attribute      | Description | Type                              | Default     |
-| ------------- | -------------- | ----------- | --------------------------------- | ----------- |
-| `drawOverlay` | `draw-overlay` |             | `boolean`                         | `undefined` |
-| `license`     | `license`      |             | `string`                          | `undefined` |
-| `onScanned`   | --             |             | `(results: TextResult[]) => void` | `undefined` |
+| Property      | Attribute      | Description | Type                                   | Default     |
+| ------------- | -------------- | ----------- | -------------------------------------- | ----------- |
+| `drawOverlay` | `draw-overlay` |             | `boolean`                              | `undefined` |
+| `license`     | `license`      |             | `string`                               | `undefined` |
+| `onScanned`   | --             |             | `(results: DetectedBarcode[]) => void` | `undefined` |
 
 
 ----------------------------------------------

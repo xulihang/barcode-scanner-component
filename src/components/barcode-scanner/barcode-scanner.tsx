@@ -1,6 +1,6 @@
 import { Component, h, Prop, State } from '@stencil/core';
-import { BarcodeReader, TextResult } from 'dynamsoft-javascript-barcode';
-import { LocalizationResult } from 'dynamsoft-javascript-barcode/dist/types/interface/localizationresult';
+import {default as BarcodeDetector} from "../../../node_modules/barcode-detection/dist/barcode-detector.esm.js"
+import {DetectedBarcode, Point2D} from "barcode-detection"
 
 @Component({
   tag: 'barcode-scanner',
@@ -13,23 +13,28 @@ export class BarcodeScanner {
   localStream!: MediaStream;
   cameraSelect!: HTMLSelectElement;
   camera!: HTMLVideoElement;
-  reader:BarcodeReader;
+  barcodeDetector:BarcodeDetector;
   interval:any;
   decoding:boolean = false;
   @State() viewBox: string = "0 0 1920 1080";
-  @State() barcodeResults: TextResult[] = [];
+  @State() barcodeResults: DetectedBarcode[] = [];
   @Prop() license?: string;
   @Prop() drawOverlay?: boolean;
-  @Prop() onScanned?: (results:TextResult[]) => void;
+  @Prop() onScanned?: (results:DetectedBarcode[]) => void;
 
   async connectedCallback() {
     console.log("connected");
-    BarcodeReader.engineResourcePath = "https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@9.0.2/dist/";
+    let license = "DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ==";
     if (this.license) {
       console.log("using license: "+this.license);
-      BarcodeReader.license = this.license;
+      license = this.license;
     }
-    this.reader = await BarcodeReader.createInstance();
+    console.log('Barcode Detector is not supported by this browser, using the Dynamsoft Barcode Reader polyfill.');
+
+    //initialize the Dynamsoft Barcode Reader with a license
+    BarcodeDetector.setDBRLicense(license);
+    await BarcodeDetector.initDBR();
+    this.barcodeDetector = new BarcodeDetector();
   }
 
   componentDidLoad(){
@@ -61,7 +66,7 @@ export class BarcodeScanner {
     const decode = async () => {
       if (this.decoding === false) {
         this.decoding = true;
-        const results = await this.reader.decode(this.camera);
+        const results = await this.barcodeDetector.detect(this.camera);
         this.barcodeResults = results;
         if (this.onScanned) {
           this.onScanned(results);
@@ -158,11 +163,12 @@ export class BarcodeScanner {
     this.scanner.style.display = "none";
   };
 
-  getPointsData = (lr:LocalizationResult) => {
-    let pointsData = lr.x1 + "," + lr.y1 + " ";
-    pointsData = pointsData + lr.x2+ "," + lr.y2 + " ";
-    pointsData = pointsData + lr.x3+ "," + lr.y3 + " ";
-    pointsData = pointsData + lr.x4+ "," + lr.y4;
+  getPointsData = (tr:DetectedBarcode) => {
+    const points:readonly Point2D[] = tr.cornerPoints;
+    let pointsData = points[0].x + "," + points[0].y + " ";
+    pointsData = pointsData + points[1].x + "," + points[1].y + " ";
+    pointsData = pointsData + points[2].x + "," + points[2].x + " ";
+    pointsData = pointsData + points[3].x + "," + points[3].x;
     return pointsData;
   }
 
@@ -175,17 +181,17 @@ export class BarcodeScanner {
         class="overlay fullscreen">
         {this.barcodeResults.map((tr,idx) => (
           <polygon key={"poly-"+idx} xmlns="<http://www.w3.org/2000/svg>"
-          points={this.getPointsData(tr.localizationResult)}
+          points={this.getPointsData(tr)}
           class="barcode-polygon"
           />
         ))}
         {this.barcodeResults.map((tr,idx) => (
           <text key={"text-"+idx} xmlns="<http://www.w3.org/2000/svg>"
-          x={tr.localizationResult.x1}
-          y={tr.localizationResult.y1}
+          x={tr.cornerPoints[0].x.toFixed(0)}
+          y={tr.cornerPoints[0].y.toFixed(0)}
           fill="red"
           font-size="20"
-          >{tr.barcodeText}</text>
+          >{tr.rawValue}</text>
         ))}
       </svg>
       )
