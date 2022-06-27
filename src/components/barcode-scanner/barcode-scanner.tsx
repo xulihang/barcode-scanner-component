@@ -1,4 +1,4 @@
-import { Component, h } from '@stencil/core';
+import { Component, h, State } from '@stencil/core';
 import { BarcodeReader } from 'dynamsoft-javascript-barcode';
 
 @Component({
@@ -15,6 +15,7 @@ export class BarcodeScanner {
   reader:BarcodeReader;
   interval:any;
   decoding:boolean = false;
+  @State() viewBox: string = "0 0 1920 1080";
 
   async connectedCallback() {
     console.log("connected");
@@ -37,7 +38,12 @@ export class BarcodeScanner {
 
   onCameraOpened() {
     console.log("on opened");
+    this.updateViewBox();
     this.startDecoding();
+  }
+
+  updateViewBox(){
+    this.viewBox = "0 0 "+this.camera.videoWidth+" "+this.camera.videoHeight;
   }
 
   startDecoding(){
@@ -145,7 +151,11 @@ export class BarcodeScanner {
       <div class="scanner" ref={(el) => this.scanner = el}>
         <select onChange={() => this.onCameraChanged()}  id="cameraSelect" ref={(el) => this.cameraSelect = el as HTMLSelectElement}></select>
         <button onClick={() => this.close()} id="closeButton">Close</button>
-        <svg class="overlay fullscreen"></svg>
+        <svg 
+          viewBox={this.viewBox}
+          xmlns="<http://www.w3.org/2000/svg>"
+          class="overlay fullscreen">
+        </svg>
         <video class="camera fullscreen" ref={(el) => this.camera = el as HTMLVideoElement} onLoadedData={()=>this.onCameraOpened()} muted autoplay="autoplay" playsinline="playsinline" webkit-playsinline></video>
       </div>
     );
