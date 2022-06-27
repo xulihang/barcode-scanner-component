@@ -26,7 +26,8 @@
     "generate": "stencil generate"
   },
   "dependencies": {
-    "@stencil/core": "^2.13.0"
+    "@stencil/core": "^2.13.0",
+    "dynamsoft-javascript-barcode": "^9.0.2"
   },
   "devDependencies": {
     "@types/jest": "^27.0.3",
