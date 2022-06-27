@@ -131,11 +131,11 @@ export class BarcodeScanner {
         audio: false
       }
     }
-    let self = this;
+    let pThis = this;
     navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
-      self.localStream = stream;
+      pThis.localStream = stream;
       // Attach local stream to video element      
-      self.camera.srcObject = stream;
+      pThis.camera.srcObject = stream;
     }).catch(function(err) {
         console.error('getUserMediaError', err, err.stack);
         alert(err.message);
