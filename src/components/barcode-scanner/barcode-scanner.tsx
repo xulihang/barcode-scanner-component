@@ -1,4 +1,4 @@
-import { Component, h, State } from '@stencil/core';
+import { Component, h, Prop, State } from '@stencil/core';
 import { BarcodeReader, TextResult } from 'dynamsoft-javascript-barcode';
 import { LocalizationResult } from 'dynamsoft-javascript-barcode/dist/types/interface/localizationresult';
 
@@ -18,10 +18,15 @@ export class BarcodeScanner {
   decoding:boolean = false;
   @State() viewBox: string = "0 0 1920 1080";
   @State() barcodeResults: TextResult[] = [];
+  @Prop() license!: string;
 
   async connectedCallback() {
     console.log("connected");
     BarcodeReader.engineResourcePath = "https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@9.0.2/dist/";
+    if (this.license) {
+      console.log("using license: "+this.license);
+      BarcodeReader.license = this.license;
+    }
     this.reader = await BarcodeReader.createInstance();
   }
 

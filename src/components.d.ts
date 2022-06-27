@@ -7,6 +7,7 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
     interface BarcodeScanner {
+        "license": string;
     }
 }
 declare global {
@@ -22,6 +23,7 @@ declare global {
 }
 declare namespace LocalJSX {
     interface BarcodeScanner {
+        "license": string;
     }
     interface IntrinsicElements {
         "barcode-scanner": BarcodeScanner;
