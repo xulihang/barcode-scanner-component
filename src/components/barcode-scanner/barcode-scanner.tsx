@@ -171,6 +171,14 @@ export class BarcodeScanner {
             class="barcode-polygon"
             />
           ))}
+          {this.barcodeResults.map((tr,idx) => (
+            <text key={"text-"+idx} xmlns="<http://www.w3.org/2000/svg>"
+            x={tr.localizationResult.x1}
+            y={tr.localizationResult.y1}
+            fill="red"
+            font-size="20"
+            >{tr.barcodeText}</text>
+          ))}
         </svg>
         <video class="camera fullscreen" ref={(el) => this.camera = el as HTMLVideoElement} onLoadedData={()=>this.onCameraOpened()} muted autoplay="autoplay" playsinline="playsinline" webkit-playsinline></video>
       </div>
