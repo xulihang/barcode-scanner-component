@@ -1,5 +1,6 @@
 import { Component, h, State } from '@stencil/core';
-import { BarcodeReader } from 'dynamsoft-javascript-barcode';
+import { BarcodeReader, TextResult } from 'dynamsoft-javascript-barcode';
+import { LocalizationResult } from 'dynamsoft-javascript-barcode/dist/types/interface/localizationresult';
 
 @Component({
   tag: 'barcode-scanner',
@@ -16,6 +17,7 @@ export class BarcodeScanner {
   interval:any;
   decoding:boolean = false;
   @State() viewBox: string = "0 0 1920 1080";
+  @State() barcodeResults: TextResult[] = [];
 
   async connectedCallback() {
     console.log("connected");
@@ -52,9 +54,9 @@ export class BarcodeScanner {
     const decode = async () => {
       if (this.decoding === false) {
         this.decoding = true;
-        var results = await this.reader.decode(this.camera);
-        this.decoding = false;
-        console.log(results);
+        const results = await this.reader.decode(this.camera);
+        this.barcodeResults = results;
+        this.decoding = false;    
       }
     }
     this.interval = setInterval(decode, 500);
@@ -119,11 +121,11 @@ export class BarcodeScanner {
         audio: false
       }
     }
-    let global = this;
+    let self = this;
     navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
-      global.localStream = stream;
+      self.localStream = stream;
       // Attach local stream to video element      
-      global.camera.srcObject = stream;
+      self.camera.srcObject = stream;
     }).catch(function(err) {
         console.error('getUserMediaError', err, err.stack);
         alert(err.message);
@@ -146,6 +148,14 @@ export class BarcodeScanner {
     this.scanner.style.display = "none";
   };
 
+  getPointsData = (lr:LocalizationResult) => {
+    let pointsData = lr.x1 + "," + lr.y1 + " ";
+    pointsData = pointsData + lr.x2+ "," + lr.y2 + " ";
+    pointsData = pointsData + lr.x3+ "," + lr.y3 + " ";
+    pointsData = pointsData + lr.x4+ "," + lr.y4;
+    return pointsData;
+  }
+
   render() {
     return (
       <div class="scanner" ref={(el) => this.scanner = el}>
@@ -155,6 +165,12 @@ export class BarcodeScanner {
           viewBox={this.viewBox}
           xmlns="<http://www.w3.org/2000/svg>"
           class="overlay fullscreen">
+          {this.barcodeResults.map((tr,idx) => (
+            <polygon key={"poly-"+idx} xmlns="<http://www.w3.org/2000/svg>"
+            points={this.getPointsData(tr.localizationResult)}
+            class="barcode-polygon"
+            />
+          ))}
         </svg>
         <video class="camera fullscreen" ref={(el) => this.camera = el as HTMLVideoElement} onLoadedData={()=>this.onCameraOpened()} muted autoplay="autoplay" playsinline="playsinline" webkit-playsinline></video>
       </div>
