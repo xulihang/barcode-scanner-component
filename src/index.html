@@ -10,5 +10,14 @@
   </head>
   <body>
     <barcode-scanner></barcode-scanner>
+    <script>
+      const barcodeScannerElement = document.querySelector('barcode-scanner');
+      const onScanned = (results) => {
+        console.log(results);
+      }
+      barcodeScannerElement.onScanned = onScanned;
+      console.log("init");
+      console.log(barcodeScannerElement);
+    </script>
   </body>
 </html>

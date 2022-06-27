@@ -5,9 +5,11 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { TextResult } from "dynamsoft-javascript-barcode";
 export namespace Components {
     interface BarcodeScanner {
         "license": string;
+        "onScanned"?: (results:TextResult[]) => void;
     }
 }
 declare global {
@@ -24,6 +26,7 @@ declare global {
 declare namespace LocalJSX {
     interface BarcodeScanner {
         "license": string;
+        "onScanned"?: (results:TextResult[]) => void;
     }
     interface IntrinsicElements {
         "barcode-scanner": BarcodeScanner;

@@ -1,4 +1,4 @@
-import { Component, h, Prop, State } from '@stencil/core';
+import { Component, EventEmitter, h, Prop, State, Event } from '@stencil/core';
 import { BarcodeReader, TextResult } from 'dynamsoft-javascript-barcode';
 import { LocalizationResult } from 'dynamsoft-javascript-barcode/dist/types/interface/localizationresult';
 
@@ -19,6 +19,7 @@ export class BarcodeScanner {
   @State() viewBox: string = "0 0 1920 1080";
   @State() barcodeResults: TextResult[] = [];
   @Prop() license!: string;
+  @Prop() onScanned?: (results:TextResult[]) => void;
 
   async connectedCallback() {
     console.log("connected");
@@ -61,6 +62,9 @@ export class BarcodeScanner {
         this.decoding = true;
         const results = await this.reader.decode(this.camera);
         this.barcodeResults = results;
+        if (this.onScanned) {
+          this.onScanned(results);
+        }
         this.decoding = false;    
       }
     }
