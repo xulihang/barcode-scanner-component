@@ -8,7 +8,8 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { TextResult } from "dynamsoft-javascript-barcode";
 export namespace Components {
     interface BarcodeScanner {
-        "license": string;
+        "drawOverlay"?: boolean;
+        "license"?: string;
         "onScanned"?: (results:TextResult[]) => void;
     }
 }
@@ -25,7 +26,8 @@ declare global {
 }
 declare namespace LocalJSX {
     interface BarcodeScanner {
-        "license": string;
+        "drawOverlay"?: boolean;
+        "license"?: string;
         "onScanned"?: (results:TextResult[]) => void;
     }
     interface IntrinsicElements {

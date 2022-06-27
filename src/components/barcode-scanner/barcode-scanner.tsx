@@ -18,7 +18,8 @@ export class BarcodeScanner {
   decoding:boolean = false;
   @State() viewBox: string = "0 0 1920 1080";
   @State() barcodeResults: TextResult[] = [];
-  @Prop() license!: string;
+  @Prop() license?: string;
+  @Prop() drawOverlay?: boolean;
   @Prop() onScanned?: (results:TextResult[]) => void;
 
   async connectedCallback() {
@@ -165,30 +166,38 @@ export class BarcodeScanner {
     return pointsData;
   }
 
+  renderSVGOverlay(){
+    if (this.drawOverlay === true) {
+      return (
+        <svg 
+        viewBox={this.viewBox}
+        xmlns="<http://www.w3.org/2000/svg>"
+        class="overlay fullscreen">
+        {this.barcodeResults.map((tr,idx) => (
+          <polygon key={"poly-"+idx} xmlns="<http://www.w3.org/2000/svg>"
+          points={this.getPointsData(tr.localizationResult)}
+          class="barcode-polygon"
+          />
+        ))}
+        {this.barcodeResults.map((tr,idx) => (
+          <text key={"text-"+idx} xmlns="<http://www.w3.org/2000/svg>"
+          x={tr.localizationResult.x1}
+          y={tr.localizationResult.y1}
+          fill="red"
+          font-size="20"
+          >{tr.barcodeText}</text>
+        ))}
+      </svg>
+      )
+    }
+  }
+
   render() {
     return (
       <div class="scanner" ref={(el) => this.scanner = el}>
         <select onChange={() => this.onCameraChanged()}  id="cameraSelect" ref={(el) => this.cameraSelect = el as HTMLSelectElement}></select>
         <button onClick={() => this.close()} id="closeButton">Close</button>
-        <svg 
-          viewBox={this.viewBox}
-          xmlns="<http://www.w3.org/2000/svg>"
-          class="overlay fullscreen">
-          {this.barcodeResults.map((tr,idx) => (
-            <polygon key={"poly-"+idx} xmlns="<http://www.w3.org/2000/svg>"
-            points={this.getPointsData(tr.localizationResult)}
-            class="barcode-polygon"
-            />
-          ))}
-          {this.barcodeResults.map((tr,idx) => (
-            <text key={"text-"+idx} xmlns="<http://www.w3.org/2000/svg>"
-            x={tr.localizationResult.x1}
-            y={tr.localizationResult.y1}
-            fill="red"
-            font-size="20"
-            >{tr.barcodeText}</text>
-          ))}
-        </svg>
+        {this.renderSVGOverlay()}
         <video class="camera fullscreen" ref={(el) => this.camera = el as HTMLVideoElement} onLoadedData={()=>this.onCameraOpened()} muted autoplay="autoplay" playsinline="playsinline" webkit-playsinline></video>
       </div>
     );
