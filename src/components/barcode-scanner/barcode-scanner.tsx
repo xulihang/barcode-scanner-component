@@ -1,4 +1,4 @@
-import { Component, EventEmitter, h, Prop, State, Event } from '@stencil/core';
+import { Component, h, Prop, State } from '@stencil/core';
 import { BarcodeReader, TextResult } from 'dynamsoft-javascript-barcode';
 import { LocalizationResult } from 'dynamsoft-javascript-barcode/dist/types/interface/localizationresult';
 
