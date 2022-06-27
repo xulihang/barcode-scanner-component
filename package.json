@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@stencil/core": "2.17.0",
-    "barcode-detection": "^0.6.1"
+    "dynamsoft-javascript-barcode": "^9.0.2"
   },
   "devDependencies": {
     "@types/jest": "^27.0.3",
