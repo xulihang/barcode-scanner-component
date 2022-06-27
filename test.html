@@ -7,5 +7,13 @@
   </head>
   <body>
     <barcode-scanner></barcode-scanner>
+    <script>
+      const barcodeScannerElement = document.querySelector('barcode-scanner');
+      const onScanned = (results) => {
+        console.log(results);
+      }
+      barcodeScannerElement.onScanned = onScanned;
+      barcodeScannerElement.drawOverlay = true;
+    </script>
   </body>
 </html>
